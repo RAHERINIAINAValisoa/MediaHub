@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mon profil')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <div class="auth-wrapper" style="max-width: 600px;" data-aos="fade-up">
+        <div class="glass-panel">
+            <h2 style="text-align: center; margin-bottom: 24px; font-weight: 800;">Mon Profil</h2>
+
+            <form th:action="@{/profile}" method="post" enctype="multipart/form-data">
+                <div class="profile-avatar-container">
+                    <img th:src="${user.photoUrl()}" alt="Aperçu de l'avatar" class="profile-avatar-preview" id="avatar-preview">
+                    <label class="btn btn-secondary btn-sm" style="margin-top: 8px;">
+                        <i class="fa-solid fa-camera"></i> Changer de photo
+                        <input type="file" name="photo" id="photo-upload-input" style="display: none;" accept="image/png, image/jpeg, image/webp">
+                    </label>
+                    <div class="form-text">Formats acceptés : JPG, PNG, WEBP. Max 5 Mo.</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prenom" class="form-label">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" class="form-control" th:value="${user.prenom()}" maxlength="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom" class="form-label">Nom</label>
+                        <input type="text" id="nom" name="nom" class="form-control" th:value="${user.nom()}" maxlength="100" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Adresse email</label>
+                    <input type="email" id="email" name="email" class="form-control" th:value="${user.email()}" maxlength="255" required>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 24px 0;">
+                <h3 style="font-weight: 700; font-size: 1.1rem; margin-bottom: 16px;">Modifier mon mot de passe (facultatif)</h3>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Nouveau mot de passe</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Laisser vide pour ne pas modifier">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Laisser vide pour ne pas modifier">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                    Enregistrer les modifications
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    // Aperçu immédiat de la photo choisie
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('photo-upload-input');
+        const previewImg = document.getElementById('avatar-preview');
+        if (fileInput && previewImg) {
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => { previewImg.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

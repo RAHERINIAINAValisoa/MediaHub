@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inscription')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <div class="auth-wrapper" data-aos="fade-up">
+        <div class="glass-panel">
+            <h2 style="text-align: center; margin-bottom: 24px; font-weight: 800;">Créer un compte</h2>
+
+            <form th:action="@{/register}" method="post" id="register-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prenom" class="form-label">Prénom *</label>
+                        <input type="text" id="prenom" name="prenom" class="form-control" placeholder="Jean" th:value="${prenom}" maxlength="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom" class="form-label">Nom *</label>
+                        <input type="text" id="nom" name="nom" class="form-control" placeholder="Dupont" th:value="${nom}" maxlength="100" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Adresse email *</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="jean.dupont@example.com" th:value="${email}" maxlength="255" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Mot de passe *</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                    <div class="form-text">6 caractères minimum.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirmer le mot de passe *</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Créer mon compte</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+                Déjà membre ? <a th:href="@{/login}" style="color: var(--accent); font-weight: 600;">Se connecter</a>
+            </p>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

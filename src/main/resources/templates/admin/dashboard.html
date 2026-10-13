@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Administration')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container" id="admin-root" th:attr="data-tab=${tab}">
+
+    <div style="margin-bottom: 35px;" data-aos="fade-down">
+        <h1 style="font-weight: 800; font-size: 2.2rem; margin-bottom: 8px;">Tableau de Bord Administrateur</h1>
+        <p style="color: var(--text-muted);">Suivez l'activité de la plateforme et gérez les contenus communautaires.</p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="dashboard-grid">
+        <div class="stat-box" data-aos="fade-up" data-aos-delay="50">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div>
+                <div class="stat-val" th:text="${totalUsers}">0</div>
+                <div class="stat-label">Utilisateurs</div>
+            </div>
+        </div>
+        <div class="stat-box" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon" style="color: var(--success); background-color: rgba(52, 199, 89, 0.1);"><i class="fa-solid fa-image"></i></div>
+            <div>
+                <div class="stat-val" th:text="${countImages}">0</div>
+                <div class="stat-label">Images</div>
+            </div>
+        </div>
+        <div class="stat-box" data-aos="fade-up" data-aos-delay="150">
+            <div class="stat-icon" style="color: #ff9500; background-color: rgba(255, 149, 0, 0.1);"><i class="fa-solid fa-video"></i></div>
+            <div>
+                <div class="stat-val" th:text="${countVideos}">0</div>
+                <div class="stat-label">Vidéos</div>
+            </div>
+        </div>
+        <div class="stat-box" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon" style="color: #5856d6; background-color: rgba(88, 86, 214, 0.1);"><i class="fa-solid fa-music"></i></div>
+            <div>
+                <div class="stat-val" th:text="${countAudios}">0</div>
+                <div class="stat-label">Audios</div>
+            </div>
+        </div>
+        <div class="stat-box" data-aos="fade-up" data-aos-delay="250">
+            <div class="stat-icon" style="color: #ff2d55; background-color: rgba(255, 45, 85, 0.1);"><i class="fa-solid fa-comments"></i></div>
+            <div>
+                <div class="stat-val" th:text="${totalComments}">0</div>
+                <div class="stat-label">Commentaires</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onglets -->
+    <div style="margin-bottom: 24px;" data-aos="fade-up">
+        <button type="button" class="filter-btn" id="tab-btn-users" data-tab="users">
+            <i class="fa-solid fa-user-gear"></i> Gestion des Utilisateurs
+        </button>
+        <button type="button" class="filter-btn" id="tab-btn-medias" data-tab="medias">
+            <i class="fa-solid fa-film"></i> Gestion des Médias
+        </button>
+    </div>
+
+    <!-- Utilisateurs -->
+    <div class="dashboard-panel" id="tab-panel-users">
+        <div class="panel-header">
+            <h2 style="font-weight: 800; font-size: 1.4rem;">Comptes Utilisateurs</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}">
+                        <td>
+                            <div class="table-user">
+                                <img th:src="${u.photoUrl()}" alt="Avatar">
+                                <div>
+                                    <div style="font-weight: 700;" th:text="${u.fullName()}">Nom</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="'ID: ' + ${u.id()}">ID</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="${u.email()}">email</td>
+                        <td>
+                            <span class="badge" th:classappend="${u.isAdmin()} ? 'badge-success' : 'badge-secondary'"
+                                  th:style="'background-color: ' + (${u.isAdmin()} ? 'rgba(52, 199, 89, 0.15)' : 'var(--bg-input)') + ';'"
+                                  th:text="${#strings.toUpperCase(u.role())}">USER</span>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${u.active()} ? 'badge-success' : 'badge-danger'"
+                                  th:text="${u.active()} ? 'Actif' : 'Désactivé'">Actif</span>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: inline-flex; gap: 8px;">
+                                <form th:action="@{/admin/users/{id}/statut(id=${u.id()})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 10px;"
+                                            th:title="${u.active()} ? 'Désactiver' : 'Activer'">
+                                        <i class="fa-solid" th:classappend="${u.active()} ? 'fa-ban' : 'fa-check'"></i>
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/admin/users/{id}/role(id=${u.id()})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 10px;" title="Changer le rôle">
+                                        <i class="fa-solid fa-arrows-spin"></i>
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/admin/users/{id}/supprimer(id=${u.id()})}" method="post" style="display: inline;"
+                                      data-confirm="Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur et l'ensemble de ses publications ?">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 10px; color: var(--accent);" title="Supprimer">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Médias -->
+    <div class="dashboard-panel" id="tab-panel-medias" style="display: none;">
+        <div class="panel-header">
+            <h2 style="font-weight: 800; font-size: 1.4rem;">Modération des Médias</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Média</th>
+                        <th>Catégorie</th>
+                        <th>Auteur</th>
+                        <th>Date de publication</th>
+                        <th>Visibilité</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(medias)}">
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            Aucun média n'a été publié pour le moment.
+                        </td>
+                    </tr>
+                    <tr th:each="m : ${medias}">
+                        <td>
+                            <div style="font-weight: 700;" th:text="${m.titre()}">Titre</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 250px;"
+                                 th:text="${m.description()}">Description</div>
+                        </td>
+                        <td>
+                            <span class="badge" style="background-color: var(--bg-input); text-transform: uppercase;" th:text="${m.categorie()}">image</span>
+                        </td>
+                        <td th:text="${m.auteurNomComplet()}">Auteur</td>
+                        <td th:text="${#temporals.format(m.date(), 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+                        <td>
+                            <span class="badge" th:classappend="${m.valide()} ? 'badge-success' : 'badge-danger'"
+                                  th:text="${m.valide()} ? 'Visible' : 'Masqué'">Visible</span>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: inline-flex; gap: 8px;">
+                                <form th:action="@{/admin/medias/{id}/visibilite(id=${m.id()})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 10px;"
+                                            th:title="${m.valide()} ? 'Masquer' : 'Publier'">
+                                        <i class="fa-solid" th:classappend="${m.valide()} ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+                                </form>
+
+                                <button type="button" class="btn btn-secondary btn-sm edit-media-btn" style="padding: 6px 10px;" title="Modifier"
+                                        th:data-id="${m.id()}" th:data-titre="${m.titre()}"
+                                        th:data-description="${m.description()}" th:data-valide="${m.valide()}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+
+                                <form th:action="@{/admin/medias/{id}/supprimer(id=${m.id()})}" method="post" style="display: inline;"
+                                      data-confirm="Êtes-vous sûr de vouloir supprimer définitivement ce média du serveur ?">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 10px; color: var(--accent);" title="Supprimer">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script th:src="@{/assets/js/admin.js}"></script>
+</body>
+</html>

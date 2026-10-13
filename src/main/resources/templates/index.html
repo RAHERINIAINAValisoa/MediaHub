@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Plateforme Multimédia Moderne')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <!-- Section d'accueil -->
+    <section class="hero-section" data-aos="zoom-out-up">
+        <h1 class="hero-title">Votre Hub Multimédia<br>Interactif &amp; Moderne</h1>
+        <p class="hero-subtitle">
+            Découvrez, hébergez et partagez vos images, vidéos et fichiers audio favoris avec une fluidité exceptionnelle.
+        </p>
+        <div class="hero-cta">
+            <a th:href="@{/galerie}" class="btn btn-primary">
+                <i class="fa-solid fa-compass"></i> Explorer la galerie
+            </a>
+            <a th:if="${user == null}" th:href="@{/register}" class="btn btn-secondary">Créer un compte</a>
+            <a th:if="${user != null}" th:href="@{/upload}" class="btn btn-secondary">
+                <i class="fa-solid fa-circle-plus"></i> Publier un média
+            </a>
+        </div>
+    </section>
+
+    <!-- Contenus tendances -->
+    <section style="margin-top: 60px;">
+        <h2 style="font-weight: 800; font-size: 1.8rem; margin-bottom: 24px;" data-aos="fade-right">
+            <i class="fa-solid fa-fire" style="color: var(--accent);"></i> Contenus Tendances
+        </h2>
+
+        <div th:if="${#lists.isEmpty(trending)}"
+             style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 40px; text-align: center;"
+             data-aos="fade-up">
+            <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+            <h3 style="margin-bottom: 8px;">La plateforme est prête !</h3>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 20px auto;">
+                Connectez-vous avec le compte administrateur ou inscrivez-vous pour commencer à publier vos photos, musiques et vidéos.
+            </p>
+            <a th:if="${user == null}" th:href="@{/login}" class="btn btn-primary btn-sm">Se connecter</a>
+            <a th:if="${user != null}" th:href="@{/upload}" class="btn btn-primary btn-sm">Téléverser mon premier média</a>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(trending)}" class="grid-gallery">
+            <th:block th:each="m : ${trending}">
+                <th:block th:replace="~{fragments/cards :: card(${m})}"></th:block>
+            </th:block>
+        </div>
+    </section>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

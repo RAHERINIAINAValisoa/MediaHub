@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - MediaHub'">MediaHub</title>
+
+    <!-- Feuilles de style tierces (FontAwesome, AOS, SweetAlert2) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- Feuille de style du projet -->
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+</head>
+<body>
+
+<!-- Barre de navigation principale -->
+<header class="navbar" th:fragment="header">
+    <div class="container nav-container">
+        <a th:href="@{/}" class="logo">
+            <i class="fa-solid fa-circle-play"></i> Media<span>Hub</span>
+        </a>
+
+        <nav>
+            <ul class="nav-links">
+                <li>
+                    <a th:href="@{/}" class="nav-item" th:classappend="${currentPath == '/'} ? 'active'">Accueil</a>
+                </li>
+                <li>
+                    <a th:href="@{/galerie}" class="nav-item" th:classappend="${currentPath?.startsWith('/galerie')} ? 'active'">Media</a>
+                </li>
+                <th:block th:if="${user != null}">
+                    <li>
+                        <a th:href="@{/upload}" class="nav-item" th:classappend="${currentPath == '/upload'} ? 'active'">Publier</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/favoris}" class="nav-item" th:classappend="${currentPath == '/favoris'} ? 'active'">Mes Favoris</a>
+                    </li>
+                    <li th:if="${user.isAdmin()}">
+                        <a th:href="@{/admin}" class="nav-item" th:classappend="${currentPath?.startsWith('/admin')} ? 'active'">Administration</a>
+                    </li>
+                </th:block>
+            </ul>
+        </nav>
+
+        <div class="nav-actions">
+            <!-- Bouton de changement de thème -->
+            <button class="theme-btn" aria-label="Changer de thème">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
+
+            <th:block th:if="${user != null}">
+                <a th:href="@{/profile}" class="nav-profile" title="Modifier mon profil">
+                    <img th:src="${user.photoUrl()}" alt="Photo de profil">
+                    <span class="nav-profile-name" th:text="${user.prenom()}">Prénom</span>
+                </a>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-secondary btn-sm" title="Se déconnecter">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+            </th:block>
+            <th:block th:unless="${user != null}">
+                <a th:href="@{/login}" class="btn btn-secondary btn-sm">Connexion</a>
+                <a th:href="@{/register}" class="btn btn-primary btn-sm">Inscription</a>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<!-- Pied de page -->
+<footer th:fragment="footer">
+    <div class="container">
+        <p th:text="'&copy; ' + ${#temporals.year(#temporals.createNow())} + ' MediaHub - Plateforme Multimédia Moderne. Tous droits réservés.'">&copy; MediaHub</p>
+    </div>
+</footer>
+
+<!-- Scripts communs à toutes les pages -->
+<th:block th:fragment="scripts">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 800, once: true, offset: 50 });
+        });
+    </script>
+    <!-- Notification SweetAlert2 envoyée par le serveur (modèle "flash") -->
+    <script th:if="${flash != null}" th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const f = /*[[${flash}]]*/ null;
+            if (!f) return;
+            const opts = { icon: f.type, title: f.title, confirmButtonColor: 'var(--accent)' };
+            if (f.text) opts.text = f.text;
+            if (f.toast) {
+                Object.assign(opts, { toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            }
+            Swal.fire(opts);
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

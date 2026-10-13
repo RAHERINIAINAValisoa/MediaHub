@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Galerie')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <div style="margin-bottom: 30px;" data-aos="fade-down">
+        <h1 style="font-weight: 800; font-size: 2.2rem; margin-bottom: 8px;">Galerie Multimédia</h1>
+        <p style="color: var(--text-muted);">Explorez l'ensemble des créations partagées par la communauté.</p>
+    </div>
+
+    <!-- Recherche, filtres et tri -->
+    <form th:action="@{/galerie}" method="get" class="filter-bar" data-aos="fade-up">
+        <input type="hidden" name="cat" th:value="${cat}">
+
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" placeholder="Rechercher par titre, auteur, description..." th:value="${q}">
+        </div>
+
+        <div class="filter-options">
+            <a th:href="@{/galerie(cat='all', q=${q}, sort=${sort})}" class="filter-btn" th:classappend="${cat == 'all'} ? 'active'">Tous</a>
+            <a th:href="@{/galerie(cat='image', q=${q}, sort=${sort})}" class="filter-btn" th:classappend="${cat == 'image'} ? 'active'">Images</a>
+            <a th:href="@{/galerie(cat='video', q=${q}, sort=${sort})}" class="filter-btn" th:classappend="${cat == 'video'} ? 'active'">Vidéos</a>
+            <a th:href="@{/galerie(cat='audio', q=${q}, sort=${sort})}" class="filter-btn" th:classappend="${cat == 'audio'} ? 'active'">Audios</a>
+        </div>
+
+        <div class="sort-box">
+            <label for="sort" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Trier par :</label>
+            <select name="sort" id="sort" class="sort-select" onchange="this.form.submit()">
+                <option value="recent" th:selected="${sort == 'recent'}">Plus récent</option>
+                <option value="oldest" th:selected="${sort == 'oldest'}">Plus ancien</option>
+                <option value="popular" th:selected="${sort == 'popular'}">Plus populaire</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- Grille -->
+    <div th:if="${#lists.isEmpty(medias)}"
+         style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 50px 20px; text-align: center;"
+         data-aos="fade-up">
+        <i class="fa-solid fa-rectangle-xmark" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+        <h3>Aucun média trouvé</h3>
+        <p style="color: var(--text-muted); max-width: 400px; margin: 8px auto 0 auto;">
+            Essayez de modifier votre recherche ou vos filtres pour obtenir des résultats.
+        </p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(medias)}" class="grid-gallery">
+        <th:block th:each="m : ${medias}">
+            <th:block th:replace="~{fragments/cards :: card(${m})}"></th:block>
+        </th:block>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

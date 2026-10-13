@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Erreur')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 60px 20px; text-align: center; margin-top: 40px;">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+        <h1 style="font-weight: 800; font-size: 2rem; margin-bottom: 8px;" th:text="${status} ?: 'Erreur'">404</h1>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">
+            <span th:if="${status == 404}">La page demandée est introuvable.</span>
+            <span th:unless="${status == 404}">Une erreur est survenue. Veuillez réessayer.</span>
+        </p>
+        <a th:href="@{/}" class="btn btn-primary btn-sm">Retour à l'accueil</a>
+    </div>
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

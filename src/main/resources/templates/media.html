@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${media.titre()})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <div style="margin-bottom: 24px;" data-aos="fade-right">
+        <a th:href="@{/galerie}" style="color: var(--text-muted); font-weight: 500; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-arrow-left"></i> Retour à la galerie
+        </a>
+    </div>
+
+    <div class="media-detail-layout">
+        <!-- Colonne gauche : lecteur et informations -->
+        <div style="display: flex; flex-direction: column; gap: 24px;" data-aos="fade-up">
+
+            <div class="media-viewer">
+                <img th:if="${media.isImage()}" th:src="${media.url()}" th:alt="${media.titre()}">
+
+                <video th:if="${media.isVideo()}" th:src="${media.url()}" controls preload="auto"></video>
+
+                <th:block th:if="${media.isAudio()}">
+                    <audio id="native-audio" th:src="${media.url()}" preload="auto"></audio>
+
+                    <div class="audio-player-deck">
+                        <div class="audio-info">
+                            <div class="audio-art"><i class="fa-solid fa-music"></i></div>
+                            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 4px;" th:text="${media.titre()}">Titre</h2>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);" th:text="${media.auteurNomComplet()}">Auteur</p>
+                        </div>
+
+                        <div class="audio-controls">
+                            <div class="audio-timeline">
+                                <span id="audio-current-time">0:00</span>
+                                <div class="progress-bar-container" id="audio-progress-container">
+                                    <div class="progress-bar-fill" id="audio-progress-fill"></div>
+                                </div>
+                                <span id="audio-duration">0:00</span>
+                            </div>
+
+                            <div class="audio-action-row">
+                                <button id="audio-play-btn" class="audio-circle-btn play-btn" aria-label="Lecture/Pause">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+
+                            <div class="audio-volume-container">
+                                <i class="fas fa-volume-up" id="audio-volume-icon" style="color: var(--text-muted);"></i>
+                                <div class="audio-volume-slider" id="audio-volume-slider" title="Volume">
+                                    <div class="audio-volume-fill" id="audio-volume-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: var(--radius-lg);">
+                <h1 style="font-weight: 800; font-size: 1.8rem; margin-bottom: 8px;" th:text="${media.titre()}">Titre</h1>
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img th:src="${media.auteurAvatarUrl()}" alt="Avatar de l'auteur" style="width: 32px; height: 32px; border-radius: var(--radius-full); object-fit: cover;">
+                        <span style="font-weight: 600;" th:text="${media.auteurNomComplet()}">Auteur</span>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">
+                        Publié le <span th:text="${publishedAt}">01 janvier 2026 à 10:00</span>
+                    </div>
+                    <span class="badge badge-success" style="text-transform: uppercase; font-size: 0.7rem;" th:text="${media.categorie()}">image</span>
+                    <span th:unless="${media.valide()}" class="badge badge-danger" style="font-size: 0.7rem;">Masqué</span>
+                </div>
+
+                <p th:if="${!#strings.isEmpty(media.description())}"
+                   style="color: var(--text-muted); white-space: pre-line; line-height: 1.7; border-top: 1px solid var(--border-color); padding-top: 16px;"
+                   th:text="${media.description()}">Description</p>
+                <p th:if="${#strings.isEmpty(media.description())}"
+                   style="color: var(--text-muted); font-style: italic; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                    Aucune description fournie.
+                </p>
+            </div>
+        </div>
+
+        <!-- Colonne droite : interactions et commentaires -->
+        <div class="media-sidebar">
+            <div class="media-interaction-card" data-aos="fade-left">
+                <div class="interaction-actions">
+                    <button id="like-action-btn" class="interaction-btn" th:classappend="${liked} ? 'active'" th:data-media-id="${media.id()}">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>J'aime</span> (<span class="likes-count" th:text="${media.likes()}">0</span>)
+                    </button>
+
+                    <button id="fav-action-btn" class="interaction-btn" th:classappend="${favori} ? 'active'" th:data-media-id="${media.id()}">
+                        <i class="fa-solid fa-star"></i>
+                        <span th:text="${favori} ? 'Favoris (Ajouté)' : 'Ajouter aux favoris'">Ajouter aux favoris</span>
+                    </button>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                    Interagissez avec la publication pour la sauvegarder dans votre bibliothèque.
+                </p>
+            </div>
+
+            <div class="comments-panel" data-aos="fade-left" data-aos-delay="100">
+                <h3 style="font-weight: 800; font-size: 1.1rem;">Commentaires (<span th:text="${#lists.size(commentaires)}">0</span>)</h3>
+
+                <form th:if="${user != null}" th:action="@{/media/{id}/commentaires(id=${media.id()})}" method="post" style="margin-bottom: 10px;">
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" name="commentaire" class="form-control" placeholder="Ajouter un commentaire..." maxlength="1000" required style="flex: 1; padding: 10px 14px;">
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 16px;" aria-label="Envoyer">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+                <div th:unless="${user != null}"
+                     style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); font-size: 0.85rem; text-align: center; border: 1px solid var(--border-color);">
+                    <a th:href="@{/login}" style="color: var(--accent); font-weight: 700;">Connectez-vous</a> pour laisser un commentaire.
+                </div>
+
+                <div class="comments-list">
+                    <p th:if="${#lists.isEmpty(commentaires)}" style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px 0;">
+                        Aucun commentaire pour le moment. Soyez le premier à commenter !
+                    </p>
+
+                    <div class="comment-card" th:each="c : ${commentaires}">
+                        <img th:src="${c.auteurAvatarUrl()}" alt="Avatar du commentateur" class="comment-avatar">
+                        <div class="comment-body">
+                            <div class="comment-header">
+                                <span class="comment-user" th:text="${c.auteurNomComplet()}">Utilisateur</span>
+                                <span class="comment-date" th:text="${#temporals.format(c.date(), 'dd/MM HH:mm')}">01/01 10:00</span>
+                            </div>
+                            <p class="comment-text" th:text="${c.texte()}">Commentaire</p>
+
+                            <!-- Suppression : auteur du commentaire ou administrateur -->
+                            <form th:if="${user != null and (c.userId() == user.id() or user.isAdmin())}"
+                                  th:action="@{/media/{id}/commentaires/{cid}/supprimer(id=${media.id()}, cid=${c.id()})}"
+                                  method="post" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                                <button type="submit" class="comment-delete-btn" aria-label="Supprimer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

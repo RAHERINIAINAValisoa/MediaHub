@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Carte d'un média (accueil, galerie, favoris) -->
+<article class="media-card" data-aos="fade-up" th:fragment="card(m)">
+    <div class="media-thumb">
+        <span class="media-category-badge" th:text="${m.categorie()}">image</span>
+
+        <img th:if="${m.isImage()}" th:src="${m.url()}" th:alt="${m.titre()}">
+        <video th:if="${m.isVideo()}" th:src="${m.url()}" muted preload="metadata"></video>
+        <div th:if="${m.isAudio()}" class="audio-card-cover">
+            <i class="fa-solid fa-music"></i>
+        </div>
+
+        <div class="media-meta-overlay">
+            <span><i class="fa-solid fa-heart"></i> <th:block th:text="${m.likes()}">0</th:block></span>
+            <a th:href="@{/media/{id}(id=${m.id()})}" class="btn btn-primary btn-sm" style="padding: 4px 8px; font-size: 0.75rem;">
+                Voir <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="media-card-body">
+        <h3 class="media-title">
+            <a th:href="@{/media/{id}(id=${m.id()})}" th:text="${m.titre()}">Titre</a>
+        </h3>
+        <div class="media-author-info">
+            <img th:src="${m.auteurAvatarUrl()}" alt="Photo de profil de l'auteur" class="media-author-img">
+            <span class="media-author-name" th:text="${m.auteurNomComplet()}">Auteur</span>
+            <span class="media-date" th:text="${#temporals.format(m.date(), 'dd/MM/yyyy')}">01/01/2026</span>
+        </div>
+    </div>
+</article>
+
+</body>
+</html>

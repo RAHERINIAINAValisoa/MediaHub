@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Publier un média')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <div class="auth-wrapper" style="max-width: 600px;" data-aos="fade-up">
+        <div class="glass-panel">
+            <h2 style="text-align: center; margin-bottom: 24px; font-weight: 800;">Publier un Média</h2>
+
+            <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label for="categorie" class="form-label">Catégorie de média *</label>
+                    <select name="categorie" id="categorie" class="form-control" required style="appearance: auto;">
+                        <option value="" disabled th:selected="${categorie == null or categorie == ''}">-- Choisir une catégorie --</option>
+                        <option value="image" th:selected="${categorie == 'image'}">Image (JPG, PNG, WEBP)</option>
+                        <option value="video" th:selected="${categorie == 'video'}">Vidéo (MP4, WEBM)</option>
+                        <option value="audio" th:selected="${categorie == 'audio'}">Audio (MP3, WAV)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fichier *</label>
+                    <div class="dropzone" id="dropzone">
+                        <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                        <p style="font-weight: 600; margin-bottom: 4px;">Glissez-déposez votre fichier ici</p>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Ou cliquez pour parcourir vos dossiers</span>
+                        <input type="file" name="media_file" id="file-input" class="file-input" required>
+                    </div>
+                    <div class="form-text">Taille maximale autorisée : 20 Mo.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="titre" class="form-label">Titre du média *</label>
+                    <input type="text" id="titre" name="titre" class="form-control" placeholder="Entrez un titre accrocheur" th:value="${titre}" maxlength="255" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Description (facultatif)</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="Donnez plus de détails sur votre création..." th:text="${description}"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                    <i class="fa-solid fa-upload"></i> Publier le média
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

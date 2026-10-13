@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mes Favoris')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="main-content">
+<div class="container">
+
+    <div style="margin-bottom: 30px;" data-aos="fade-down">
+        <h1 style="font-weight: 800; font-size: 2.2rem; margin-bottom: 8px;">Mes Favoris</h1>
+        <p style="color: var(--text-muted);">Votre bibliothèque personnelle de contenus sauvegardés.</p>
+    </div>
+
+    <div th:if="${#lists.isEmpty(medias)}"
+         style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 50px 20px; text-align: center;"
+         data-aos="fade-up">
+        <i class="fa-solid fa-star" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+        <h3>Aucun favori pour le moment</h3>
+        <p style="color: var(--text-muted); max-width: 400px; margin: 8px auto 20px auto;">
+            Parcourez la galerie et cliquez sur le bouton "Ajouter aux favoris" pour sauvegarder des publications ici.
+        </p>
+        <a th:href="@{/galerie}" class="btn btn-primary btn-sm">Découvrir la galerie</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(medias)}" class="grid-gallery">
+        <th:block th:each="m : ${medias}">
+            <th:block th:replace="~{fragments/cards :: card(${m})}"></th:block>
+        </th:block>
+    </div>
+
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
